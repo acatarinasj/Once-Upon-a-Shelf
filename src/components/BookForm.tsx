@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import type { NewBook } from '../types'
 
-const currentYear = new Date().getFullYear()
+const currentYearMonth = new Date().toISOString().slice(0, 7)
 
 interface BookFormProps {
   onAdd: (book: NewBook) => Promise<string | null>
@@ -11,7 +11,7 @@ interface BookFormProps {
 export default function BookForm({ onAdd }: BookFormProps) {
   const [title, setTitle] = useState('')
   const [publisher, setPublisher] = useState('')
-  const [year, setYear] = useState(String(currentYear))
+  const [publishedMonth, setPublishedMonth] = useState(currentYearMonth)
   const [price, setPrice] = useState('')
   const [link, setLink] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -21,15 +21,14 @@ export default function BookForm({ onAdd }: BookFormProps) {
     event.preventDefault()
     setError(null)
 
-    const parsedYear = Number(year)
     const parsedPrice = Number(price)
 
     if (!title.trim() || !publisher.trim()) {
       setError('Indica o nome do livro e a editora.')
       return
     }
-    if (!Number.isInteger(parsedYear)) {
-      setError('Ano inválido.')
+    if (!/^\d{4}-\d{2}$/.test(publishedMonth)) {
+      setError('Mês de publicação inválido.')
       return
     }
     if (Number.isNaN(parsedPrice) || parsedPrice < 0) {
@@ -41,7 +40,7 @@ export default function BookForm({ onAdd }: BookFormProps) {
     const errorMessage = await onAdd({
       title: title.trim(),
       publisher: publisher.trim(),
-      year: parsedYear,
+      published_month: `${publishedMonth}-01`,
       price: parsedPrice,
       link: link.trim() || null,
     })
@@ -54,7 +53,7 @@ export default function BookForm({ onAdd }: BookFormProps) {
 
     setTitle('')
     setPublisher('')
-    setYear(String(currentYear))
+    setPublishedMonth(currentYearMonth)
     setPrice('')
     setLink('')
   }
@@ -85,14 +84,13 @@ export default function BookForm({ onAdd }: BookFormProps) {
 
       <div className="field-row">
         <div className="field">
-          <label htmlFor="year">Ano</label>
+          <label htmlFor="published-month">Mês de publicação</label>
           <input
-            id="year"
-            type="number"
-            inputMode="numeric"
+            id="published-month"
+            type="month"
             required
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
+            value={publishedMonth}
+            onChange={(e) => setPublishedMonth(e.target.value)}
           />
         </div>
 

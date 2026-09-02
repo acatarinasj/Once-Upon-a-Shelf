@@ -232,6 +232,21 @@ button.link.danger {
   min-width: 0;
 }
 
+.book-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.stale-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
 .book-title {
   font-weight: 600;
   color: var(--text-h);
@@ -240,6 +255,7 @@ button.link.danger {
   text-overflow: ellipsis;
   white-space: nowrap;
   display: block;
+  min-width: 0;
 }
 
 a.book-title-link {

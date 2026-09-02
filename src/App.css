@@ -8,6 +8,7 @@
   background: var(--surface);
   box-shadow: var(--shadow);
   min-height: 100svh;
+  overflow-x: hidden;
 }
 
 .page.centered {
@@ -31,6 +32,7 @@
     font-size: 22px;
     margin: 0;
     letter-spacing: -0.3px;
+    flex-shrink: 0;
   }
 }
 
@@ -38,11 +40,21 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
+
+  button.link {
+    flex-shrink: 0;
+    width: auto;
+  }
 }
 
 .user-email {
   font-size: 13px;
   color: var(--text);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 main {
@@ -94,6 +106,7 @@ input {
   background: var(--surface);
   color: var(--text-h);
   min-height: 44px;
+  width: 100%;
 
   &:focus-visible {
     outline: 2px solid var(--accent);
@@ -170,14 +183,17 @@ button.link.danger {
   .field {
     display: flex;
     flex-direction: column;
+    min-width: 0;
   }
 
   .field-row {
     display: flex;
     gap: 12px;
+    min-width: 0;
 
     .field {
       flex: 1;
+      min-width: 0;
     }
   }
 
@@ -220,6 +236,16 @@ button.link.danger {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: block;
+}
+
+a.book-title-link {
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    color: var(--accent-h);
+  }
 }
 
 .book-meta {

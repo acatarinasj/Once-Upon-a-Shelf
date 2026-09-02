@@ -23,7 +23,18 @@ export default function BookList({ books, onDelete }: BookListProps) {
         {books.map((book) => (
           <li key={book.id} className="book-card">
             <div className="book-info">
-              <div className="book-title">{book.title}</div>
+              {book.link ? (
+                <a
+                  className="book-title book-title-link"
+                  href={book.link}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  {book.title}
+                </a>
+              ) : (
+                <div className="book-title">{book.title}</div>
+              )}
               <div className="book-meta">
                 {book.publisher} · {book.year}
               </div>

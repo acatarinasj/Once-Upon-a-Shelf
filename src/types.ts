@@ -5,7 +5,8 @@ export interface Book {
   publisher: string
   year: number
   price: number
+  link: string | null
   created_at: string
 }
 
-export type NewBook = Pick<Book, 'title' | 'publisher' | 'year' | 'price'>
+export type NewBook = Pick<Book, 'title' | 'publisher' | 'year' | 'price' | 'link'>

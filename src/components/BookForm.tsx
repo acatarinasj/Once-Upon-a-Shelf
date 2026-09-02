@@ -13,6 +13,7 @@ export default function BookForm({ onAdd }: BookFormProps) {
   const [publisher, setPublisher] = useState('')
   const [year, setYear] = useState(String(currentYear))
   const [price, setPrice] = useState('')
+  const [link, setLink] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -42,6 +43,7 @@ export default function BookForm({ onAdd }: BookFormProps) {
       publisher: publisher.trim(),
       year: parsedYear,
       price: parsedPrice,
+      link: link.trim() || null,
     })
     setSaving(false)
 
@@ -54,6 +56,7 @@ export default function BookForm({ onAdd }: BookFormProps) {
     setPublisher('')
     setYear(String(currentYear))
     setPrice('')
+    setLink('')
   }
 
   return (
@@ -106,6 +109,18 @@ export default function BookForm({ onAdd }: BookFormProps) {
             onChange={(e) => setPrice(e.target.value)}
           />
         </div>
+      </div>
+
+      <div className="field">
+        <label htmlFor="link">Link (opcional)</label>
+        <input
+          id="link"
+          type="url"
+          inputMode="url"
+          placeholder="https://..."
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
+        />
       </div>
 
       <button type="submit" className="primary" disabled={saving}>

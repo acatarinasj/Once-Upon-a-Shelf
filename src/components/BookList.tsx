@@ -19,36 +19,31 @@ export default function BookList({ books, onDelete }: BookListProps) {
 
   return (
     <>
-      <table className="book-table">
-        <thead>
-          <tr>
-            <th>Livro</th>
-            <th>Editora</th>
-            <th>Ano</th>
-            <th>Preço</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {books.map((book) => (
-            <tr key={book.id}>
-              <td>{book.title}</td>
-              <td>{book.publisher}</td>
-              <td>{book.year}</td>
-              <td>{currencyFormatter.format(book.price)}</td>
-              <td>
-                <button
-                  type="button"
-                  className="link danger"
-                  onClick={() => onDelete(book.id)}
-                >
-                  Remover
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <ul className="book-list">
+        {books.map((book) => (
+          <li key={book.id} className="book-card">
+            <div className="book-info">
+              <div className="book-title">{book.title}</div>
+              <div className="book-meta">
+                {book.publisher} · {book.year}
+              </div>
+            </div>
+            <div className="book-side">
+              <span className="book-price">
+                {currencyFormatter.format(book.price)}
+              </span>
+              <button
+                type="button"
+                className="book-delete"
+                aria-label={`Remover ${book.title}`}
+                onClick={() => onDelete(book.id)}
+              >
+                ×
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
       <p className="total">
         Total: <strong>{currencyFormatter.format(total)}</strong>
       </p>

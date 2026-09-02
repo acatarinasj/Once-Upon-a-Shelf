@@ -110,6 +110,9 @@ input {
   color: var(--text-h);
   min-height: 44px;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 
   &:focus-visible {
     outline: 2px solid var(--accent);

@@ -82,31 +82,29 @@ export default function BookForm({ onAdd }: BookFormProps) {
         />
       </div>
 
-      <div className="field-row">
-        <div className="field">
-          <label htmlFor="published-month">Mês de publicação</label>
-          <input
-            id="published-month"
-            type="month"
-            required
-            value={publishedMonth}
-            onChange={(e) => setPublishedMonth(e.target.value)}
-          />
-        </div>
+      <div className="field">
+        <label htmlFor="published-month">Mês de publicação</label>
+        <input
+          id="published-month"
+          type="month"
+          required
+          value={publishedMonth}
+          onChange={(e) => setPublishedMonth(e.target.value)}
+        />
+      </div>
 
-        <div className="field">
-          <label htmlFor="price">Preço (€)</label>
-          <input
-            id="price"
-            type="number"
-            inputMode="decimal"
-            step="0.01"
-            min="0"
-            required
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
-        </div>
+      <div className="field">
+        <label htmlFor="price">Preço (€)</label>
+        <input
+          id="price"
+          type="number"
+          inputMode="decimal"
+          step="0.01"
+          min="0"
+          required
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+        />
       </div>
 
       <div className="field">

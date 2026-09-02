@@ -30,64 +30,86 @@ function formatMonthYear(publishedMonth: string): string {
   return `${String(month).padStart(2, '0')}/${year}`
 }
 
+function groupByPublisher(books: Book[]): { publisher: string; books: Book[] }[] {
+  const groups: { publisher: string; books: Book[] }[] = []
+
+  for (const book of books) {
+    const lastGroup = groups[groups.length - 1]
+    if (lastGroup && lastGroup.publisher === book.publisher) {
+      lastGroup.books.push(book)
+    } else {
+      groups.push({ publisher: book.publisher, books: [book] })
+    }
+  }
+
+  return groups
+}
+
 export default function BookList({ books, onDelete }: BookListProps) {
   if (books.length === 0) {
     return <p className="empty-state">Ainda não registaste nenhum livro.</p>
   }
 
   const total = books.reduce((sum, book) => sum + book.price, 0)
+  const groups = groupByPublisher(books)
 
   return (
     <>
-      <ul className="book-list">
-        {books.map((book) => {
-          const isStale = monthsSincePublished(book.published_month) > STALE_MONTHS
+      {groups.map((group) => (
+        <div key={group.publisher} className="publisher-group">
+          <h2 className="publisher-heading">{group.publisher}</h2>
+          <ul className="book-list">
+            {group.books.map((book) => {
+              const isStale =
+                monthsSincePublished(book.published_month) > STALE_MONTHS
 
-          return (
-            <li key={book.id} className="book-card">
-              <div className="book-info">
-                <div className="book-title-row">
-                  {isStale && (
-                    <span
-                      className="stale-dot"
-                      title={`Publicado há mais de ${STALE_MONTHS} meses`}
-                    />
-                  )}
-                  {book.link ? (
-                    <a
-                      className="book-title book-title-link"
-                      href={book.link}
-                      target="_blank"
-                      rel="noreferrer noopener"
+              return (
+                <li key={book.id} className="book-card">
+                  <div className="book-info">
+                    <div className="book-title-row">
+                      {isStale && (
+                        <span
+                          className="stale-dot"
+                          title={`Publicado há mais de ${STALE_MONTHS} meses`}
+                        />
+                      )}
+                      {book.link ? (
+                        <a
+                          className="book-title book-title-link"
+                          href={book.link}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          {book.title}
+                        </a>
+                      ) : (
+                        <div className="book-title">{book.title}</div>
+                      )}
+                    </div>
+                    <div className="book-meta">
+                      {formatMonthYear(book.published_month)} ·{' '}
+                      {CATEGORY_LABELS[book.category]}
+                    </div>
+                  </div>
+                  <div className="book-side">
+                    <span className="book-price">
+                      {currencyFormatter.format(book.price)}
+                    </span>
+                    <button
+                      type="button"
+                      className="book-delete"
+                      aria-label={`Remover ${book.title}`}
+                      onClick={() => onDelete(book.id)}
                     >
-                      {book.title}
-                    </a>
-                  ) : (
-                    <div className="book-title">{book.title}</div>
-                  )}
-                </div>
-                <div className="book-meta">
-                  {book.publisher} · {formatMonthYear(book.published_month)} ·{' '}
-                  {CATEGORY_LABELS[book.category]}
-                </div>
-              </div>
-              <div className="book-side">
-                <span className="book-price">
-                  {currencyFormatter.format(book.price)}
-                </span>
-                <button
-                  type="button"
-                  className="book-delete"
-                  aria-label={`Remover ${book.title}`}
-                  onClick={() => onDelete(book.id)}
-                >
-                  ×
-                </button>
-              </div>
-            </li>
-          )
-        })}
-      </ul>
+                      ×
+                    </button>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      ))}
       <p className="total">
         Total: <strong>{currencyFormatter.format(total)}</strong>
       </p>

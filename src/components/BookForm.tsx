@@ -2,7 +2,24 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import type { NewBook } from '../types'
 
-const currentYearMonth = new Date().toISOString().slice(0, 7)
+const MONTHS = [
+  { value: '01', label: 'Janeiro' },
+  { value: '02', label: 'Fevereiro' },
+  { value: '03', label: 'Março' },
+  { value: '04', label: 'Abril' },
+  { value: '05', label: 'Maio' },
+  { value: '06', label: 'Junho' },
+  { value: '07', label: 'Julho' },
+  { value: '08', label: 'Agosto' },
+  { value: '09', label: 'Setembro' },
+  { value: '10', label: 'Outubro' },
+  { value: '11', label: 'Novembro' },
+  { value: '12', label: 'Dezembro' },
+]
+
+const now = new Date()
+const currentMonth = String(now.getMonth() + 1).padStart(2, '0')
+const currentYear = String(now.getFullYear())
 
 interface BookFormProps {
   onAdd: (book: NewBook) => Promise<string | null>
@@ -11,7 +28,8 @@ interface BookFormProps {
 export default function BookForm({ onAdd }: BookFormProps) {
   const [title, setTitle] = useState('')
   const [publisher, setPublisher] = useState('')
-  const [publishedMonth, setPublishedMonth] = useState(currentYearMonth)
+  const [publishedMonth, setPublishedMonth] = useState(currentMonth)
+  const [publishedYear, setPublishedYear] = useState(currentYear)
   const [price, setPrice] = useState('')
   const [link, setLink] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -21,14 +39,15 @@ export default function BookForm({ onAdd }: BookFormProps) {
     event.preventDefault()
     setError(null)
 
+    const parsedYear = Number(publishedYear)
     const parsedPrice = Number(price)
 
     if (!title.trim() || !publisher.trim()) {
       setError('Indica o nome do livro e a editora.')
       return
     }
-    if (!/^\d{4}-\d{2}$/.test(publishedMonth)) {
-      setError('Mês de publicação inválido.')
+    if (!Number.isInteger(parsedYear) || parsedYear < 1000 || parsedYear > 9999) {
+      setError('Ano inválido.')
       return
     }
     if (Number.isNaN(parsedPrice) || parsedPrice < 0) {
@@ -40,7 +59,7 @@ export default function BookForm({ onAdd }: BookFormProps) {
     const errorMessage = await onAdd({
       title: title.trim(),
       publisher: publisher.trim(),
-      published_month: `${publishedMonth}-01`,
+      published_month: `${publishedYear}-${publishedMonth}-01`,
       price: parsedPrice,
       link: link.trim() || null,
     })
@@ -53,7 +72,8 @@ export default function BookForm({ onAdd }: BookFormProps) {
 
     setTitle('')
     setPublisher('')
-    setPublishedMonth(currentYearMonth)
+    setPublishedMonth(currentMonth)
+    setPublishedYear(currentYear)
     setPrice('')
     setLink('')
   }
@@ -82,15 +102,34 @@ export default function BookForm({ onAdd }: BookFormProps) {
         />
       </div>
 
-      <div className="field">
-        <label htmlFor="published-month">Mês de publicação</label>
-        <input
-          id="published-month"
-          type="month"
-          required
-          value={publishedMonth}
-          onChange={(e) => setPublishedMonth(e.target.value)}
-        />
+      <div className="field-row">
+        <div className="field">
+          <label htmlFor="published-month">Mês</label>
+          <select
+            id="published-month"
+            required
+            value={publishedMonth}
+            onChange={(e) => setPublishedMonth(e.target.value)}
+          >
+            {MONTHS.map((month) => (
+              <option key={month.value} value={month.value}>
+                {month.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="field">
+          <label htmlFor="published-year">Ano</label>
+          <input
+            id="published-year"
+            type="number"
+            inputMode="numeric"
+            required
+            value={publishedYear}
+            onChange={(e) => setPublishedYear(e.target.value)}
+          />
+        </div>
       </div>
 
       <div className="field">

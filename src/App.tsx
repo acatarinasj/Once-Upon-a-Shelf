@@ -8,6 +8,15 @@ import BookList from './components/BookList'
 import owlLogo from './assets/owl-logo.png'
 import './App.css'
 
+function sortBooks(books: Book[]): Book[] {
+  return [...books].sort(
+    (a, b) =>
+      a.category.localeCompare(b.category) ||
+      a.publisher.localeCompare(b.publisher) ||
+      a.published_month.localeCompare(b.published_month),
+  )
+}
+
 function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
@@ -43,7 +52,9 @@ function App() {
     supabase
       .from('books')
       .select('*')
-      .order('created_at', { ascending: false })
+      .order('category', { ascending: true })
+      .order('publisher', { ascending: true })
+      .order('published_month', { ascending: true })
       .then(({ data, error }) => {
         if (cancelled) return
         if (error) {
@@ -70,7 +81,7 @@ function App() {
 
     if (error) return error.message
 
-    setBooks((current) => [data as Book, ...current])
+    setBooks((current) => sortBooks([...current, data as Book]))
     return null
   }
 

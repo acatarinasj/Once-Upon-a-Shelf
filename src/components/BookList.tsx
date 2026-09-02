@@ -12,6 +12,11 @@ const currencyFormatter = new Intl.NumberFormat('pt-PT', {
 
 const STALE_MONTHS = 24
 
+const CATEGORY_LABELS = {
+  adulto: 'Adulto',
+  crianca: 'Criança',
+} as const
+
 function monthsSincePublished(publishedMonth: string): number {
   const [year, month] = publishedMonth.slice(0, 7).split('-').map(Number)
   const now = new Date()
@@ -62,7 +67,8 @@ export default function BookList({ books, onDelete }: BookListProps) {
                   )}
                 </div>
                 <div className="book-meta">
-                  {book.publisher} · {formatMonthYear(book.published_month)}
+                  {book.publisher} · {formatMonthYear(book.published_month)} ·{' '}
+                  {CATEGORY_LABELS[book.category]}
                 </div>
               </div>
               <div className="book-side">

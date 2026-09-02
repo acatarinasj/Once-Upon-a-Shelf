@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import type { NewBook } from '../types'
+import type { Category, NewBook } from '../types'
 
 const MONTHS = [
   { value: '01', label: 'Janeiro' },
@@ -30,6 +30,7 @@ export default function BookForm({ onAdd }: BookFormProps) {
   const [publisher, setPublisher] = useState('')
   const [publishedMonth, setPublishedMonth] = useState(currentMonth)
   const [publishedYear, setPublishedYear] = useState(currentYear)
+  const [category, setCategory] = useState<Category>('adulto')
   const [price, setPrice] = useState('')
   const [link, setLink] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -60,6 +61,7 @@ export default function BookForm({ onAdd }: BookFormProps) {
       title: title.trim(),
       publisher: publisher.trim(),
       published_month: `${publishedYear}-${publishedMonth}-01`,
+      category,
       price: parsedPrice,
       link: link.trim() || null,
     })
@@ -130,6 +132,19 @@ export default function BookForm({ onAdd }: BookFormProps) {
             onChange={(e) => setPublishedYear(e.target.value)}
           />
         </div>
+      </div>
+
+      <div className="field">
+        <label htmlFor="category">Categoria</label>
+        <select
+          id="category"
+          required
+          value={category}
+          onChange={(e) => setCategory(e.target.value as Category)}
+        >
+          <option value="adulto">Adulto</option>
+          <option value="crianca">Criança</option>
+        </select>
       </div>
 
       <div className="field">

@@ -5,6 +5,7 @@ import type { Book, NewBook } from './types'
 import Login from './components/Login'
 import BookForm from './components/BookForm'
 import BookList from './components/BookList'
+import owlLogo from './assets/owl-logo.png'
 import './App.css'
 
 function App() {
@@ -103,17 +104,17 @@ function App() {
   return (
     <div className="page">
       <header className="app-header">
-        <h1>Once Upon a Shelf</h1>
-        <div className="header-actions">
-          <span className="user-email">{session.user.email}</span>
-          <button
-            type="button"
-            className="link"
-            onClick={() => supabase.auth.signOut()}
-          >
-            Sair
-          </button>
+        <div className="header-title">
+          <img src={owlLogo} className="app-logo" alt="" />
+          <h1>Once Upon a Shelf</h1>
         </div>
+        <button
+          type="button"
+          className="link"
+          onClick={() => supabase.auth.signOut()}
+        >
+          Sair
+        </button>
       </header>
 
       <main>

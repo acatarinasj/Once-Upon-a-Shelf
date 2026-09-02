@@ -21,40 +21,43 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px;
+  padding: 14px 20px;
   background: var(--surface-alt);
   border-bottom: 1px solid var(--border);
   text-align: left;
   position: sticky;
   top: 0;
-
-  h1 {
-    font-size: 22px;
-    margin: 0;
-    letter-spacing: -0.3px;
-    flex-shrink: 0;
-  }
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   min-width: 0;
 
   button.link {
     flex-shrink: 0;
     width: auto;
+    margin: 0;
   }
 }
 
-.user-email {
-  font-size: 13px;
-  color: var(--text);
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+
+  h1 {
+    font-size: 20px;
+    margin: 0;
+    letter-spacing: -0.3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.app-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  object-fit: cover;
 }
 
 main {

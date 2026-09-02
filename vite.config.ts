@@ -3,6 +3,6 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/Readiculous/',
+  base: '/Once-Upon-a-Shelf/',
   plugins: [react()],
 })

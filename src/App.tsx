@@ -103,7 +103,7 @@ function App() {
   return (
     <div className="page">
       <header className="app-header">
-        <h1>Readiculous</h1>
+        <h1>Once Upon a Shelf</h1>
         <div className="header-actions">
           <span className="user-email">{session.user.email}</span>
           <button

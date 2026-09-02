@@ -34,7 +34,7 @@ export default function Login() {
 
   return (
     <section className="auth-card">
-      <h1>Readiculous</h1>
+      <h1>Once Upon a Shelf</h1>
       <p className="subtitle">Regista os livros que ainda vais comprar</p>
 
       <form onSubmit={handleSubmit}>

@@ -1,4 +1,4 @@
-# Readiculous
+# Once Upon a Shelf
 
 App para registar livros que ainda vais comprar: nome, editora, ano e preço.
 Autenticação por email/password via Supabase Auth; cada utilizador só vê os

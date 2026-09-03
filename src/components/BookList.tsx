@@ -1,8 +1,11 @@
+import { useState } from 'react'
 import type { Book } from '../types'
 
 interface BookListProps {
   books: Book[]
+  stands: Record<string, string>
   onDelete: (id: string) => void
+  onUpdateStand: (publisher: string, stand: string) => Promise<string | null>
 }
 
 const currencyFormatter = new Intl.NumberFormat('pt-PT', {
@@ -45,7 +48,44 @@ function groupByPublisher(books: Book[]): { publisher: string; books: Book[] }[]
   return groups
 }
 
-export default function BookList({ books, onDelete }: BookListProps) {
+interface StandInputProps {
+  publisher: string
+  value: string
+  onUpdateStand: (publisher: string, stand: string) => Promise<string | null>
+}
+
+function StandInput({ publisher, value, onUpdateStand }: StandInputProps) {
+  const [draft, setDraft] = useState(value)
+  const [saving, setSaving] = useState(false)
+
+  async function commit() {
+    if (draft === value) return
+    setSaving(true)
+    const error = await onUpdateStand(publisher, draft.trim())
+    setSaving(false)
+    if (error) setDraft(value)
+  }
+
+  return (
+    <input
+      type="text"
+      className="stand-input"
+      placeholder="Stand"
+      value={draft}
+      disabled={saving}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      aria-label={`Stand da editora ${publisher}`}
+    />
+  )
+}
+
+export default function BookList({
+  books,
+  stands,
+  onDelete,
+  onUpdateStand,
+}: BookListProps) {
   if (books.length === 0) {
     return <p className="empty-state">Ainda não registaste nenhum livro.</p>
   }
@@ -57,7 +97,15 @@ export default function BookList({ books, onDelete }: BookListProps) {
     <>
       {groups.map((group) => (
         <div key={group.publisher} className="publisher-group">
-          <h2 className="publisher-heading">{group.publisher}</h2>
+          <div className="publisher-heading-row">
+            <h2 className="publisher-heading">{group.publisher}</h2>
+            <StandInput
+              key={stands[group.publisher] ?? ''}
+              publisher={group.publisher}
+              value={stands[group.publisher] ?? ''}
+              onUpdateStand={onUpdateStand}
+            />
+          </div>
           <ul className="book-list">
             {group.books.map((book) => {
               const isStale =

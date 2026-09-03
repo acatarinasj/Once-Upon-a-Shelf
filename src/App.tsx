@@ -23,6 +23,7 @@ function App() {
   const [books, setBooks] = useState<Book[]>([])
   const [booksLoading, setBooksLoading] = useState(false)
   const [booksError, setBooksError] = useState<string | null>(null)
+  const [stands, setStands] = useState<Record<string, string>>({})
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -42,6 +43,7 @@ function App() {
   useEffect(() => {
     if (!session) {
       setBooks([])
+      setStands({})
       return
     }
 
@@ -65,6 +67,18 @@ function App() {
         setBooksLoading(false)
       })
 
+    supabase
+      .from('publisher_stands')
+      .select('publisher, stand')
+      .then(({ data, error }) => {
+        if (cancelled || error || !data) return
+        const map: Record<string, string> = {}
+        for (const row of data as { publisher: string; stand: string | null }[]) {
+          if (row.stand) map[row.publisher] = row.stand
+        }
+        setStands(map)
+      })
+
     return () => {
       cancelled = true
     }
@@ -82,6 +96,31 @@ function App() {
     if (error) return error.message
 
     setBooks((current) => sortBooks([...current, data as Book]))
+    return null
+  }
+
+  async function handleUpdateStand(
+    publisher: string,
+    stand: string,
+  ): Promise<string | null> {
+    if (!session) return 'Sessão inválida.'
+
+    const { error } = await supabase.from('publisher_stands').upsert(
+      { user_id: session.user.id, publisher, stand: stand || null },
+      { onConflict: 'user_id,publisher' },
+    )
+
+    if (error) return error.message
+
+    setStands((current) => {
+      const next = { ...current }
+      if (stand) {
+        next[publisher] = stand
+      } else {
+        delete next[publisher]
+      }
+      return next
+    })
     return null
   }
 
@@ -136,7 +175,12 @@ function App() {
         {booksLoading ? (
           <p className="empty-state">A carregar livros...</p>
         ) : (
-          <BookList books={books} onDelete={handleDeleteBook} />
+          <BookList
+            books={books}
+            stands={stands}
+            onDelete={handleDeleteBook}
+            onUpdateStand={handleUpdateStand}
+          />
         )}
       </main>
     </div>

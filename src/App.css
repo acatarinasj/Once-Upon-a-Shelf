@@ -213,6 +213,27 @@ button.link.danger {
   }
 }
 
+.export-bar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.button-secondary {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: none;
+  color: var(--accent-h);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--accent-bg);
+  }
+}
+
 .publisher-group {
   display: flex;
   flex-direction: column;

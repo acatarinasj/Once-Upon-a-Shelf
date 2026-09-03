@@ -5,6 +5,7 @@ import type { Book, NewBook } from './types'
 import Login from './components/Login'
 import BookForm from './components/BookForm'
 import BookList from './components/BookList'
+import { exportBooksToExcel } from './lib/exportBooks'
 import owlLogo from './assets/owl-logo.png'
 import './App.css'
 
@@ -175,12 +176,25 @@ function App() {
         {booksLoading ? (
           <p className="empty-state">A carregar livros...</p>
         ) : (
-          <BookList
-            books={books}
-            stands={stands}
-            onDelete={handleDeleteBook}
-            onUpdateStand={handleUpdateStand}
-          />
+          <>
+            {books.length > 0 && (
+              <div className="export-bar">
+                <button
+                  type="button"
+                  className="button-secondary"
+                  onClick={() => exportBooksToExcel(books, stands)}
+                >
+                  Exportar para Excel
+                </button>
+              </div>
+            )}
+            <BookList
+              books={books}
+              stands={stands}
+              onDelete={handleDeleteBook}
+              onUpdateStand={handleUpdateStand}
+            />
+          </>
         )}
       </main>
     </div>

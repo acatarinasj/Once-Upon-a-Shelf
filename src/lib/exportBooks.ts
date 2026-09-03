@@ -1,4 +1,5 @@
 import type { Book } from '../types'
+import { groupBooksByPublisher } from './groupBooks'
 
 const CATEGORY_LABELS: Record<string, string> = {
   adulto: 'Adulto',
@@ -16,7 +17,11 @@ export async function exportBooksToExcel(
 ) {
   const XLSX = await import('xlsx')
 
-  const rows = books.map((book) => ({
+  const orderedBooks = groupBooksByPublisher(books, stands).flatMap(
+    (group) => group.books,
+  )
+
+  const rows = orderedBooks.map((book) => ({
     Categoria: CATEGORY_LABELS[book.category] ?? book.category,
     Editora: book.publisher,
     Stand: stands[book.publisher] ?? '',

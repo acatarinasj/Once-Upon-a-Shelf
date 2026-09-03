@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Book } from '../types'
+import { groupBooksByPublisher } from '../lib/groupBooks'
 
 interface BookListProps {
   books: Book[]
@@ -31,21 +32,6 @@ function monthsSincePublished(publishedMonth: string): number {
 function formatMonthYear(publishedMonth: string): string {
   const [year, month] = publishedMonth.slice(0, 7).split('-').map(Number)
   return `${String(month).padStart(2, '0')}/${year}`
-}
-
-function groupByPublisher(books: Book[]): { publisher: string; books: Book[] }[] {
-  const groups: { publisher: string; books: Book[] }[] = []
-
-  for (const book of books) {
-    const lastGroup = groups[groups.length - 1]
-    if (lastGroup && lastGroup.publisher === book.publisher) {
-      lastGroup.books.push(book)
-    } else {
-      groups.push({ publisher: book.publisher, books: [book] })
-    }
-  }
-
-  return groups
 }
 
 interface StandInputProps {
@@ -91,12 +77,12 @@ export default function BookList({
   }
 
   const total = books.reduce((sum, book) => sum + book.price, 0)
-  const groups = groupByPublisher(books)
+  const groups = groupBooksByPublisher(books, stands)
 
   return (
     <>
       {groups.map((group) => (
-        <div key={group.publisher} className="publisher-group">
+        <div key={`${group.category}|${group.publisher}`} className="publisher-group">
           <div className="publisher-heading-row">
             <h2 className="publisher-heading">{group.publisher}</h2>
             <StandInput

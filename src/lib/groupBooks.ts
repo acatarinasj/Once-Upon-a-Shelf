@@ -1,8 +1,7 @@
-import type { Book, Category } from '../types'
+import type { Book } from '../types'
 import { normalizePublisherKey } from './publisher'
 
 export interface PublisherGroup {
-  category: Category
   publisher: string
   standKey: string
   books: Book[]
@@ -20,13 +19,11 @@ export function groupBooksByPublisher(
 
   for (const book of books) {
     const standKey = normalizePublisherKey(book.publisher)
-    const key = `${book.category}|${standKey}`
-    const group = map.get(key)
+    const group = map.get(standKey)
     if (group) {
       group.books.push(book)
     } else {
-      map.set(key, {
-        category: book.category,
+      map.set(standKey, {
         publisher: book.publisher.trim(),
         standKey,
         books: [book],
@@ -40,8 +37,6 @@ export function groupBooksByPublisher(
   }
 
   groups.sort((a, b) => {
-    if (a.category !== b.category) return a.category.localeCompare(b.category)
-
     const standA = stands[a.standKey]
     const standB = stands[b.standKey]
     if (standA && standB) return naturalCompare(standA, standB)

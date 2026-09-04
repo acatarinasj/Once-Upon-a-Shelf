@@ -82,13 +82,13 @@ export default function BookList({
   return (
     <>
       {groups.map((group) => (
-        <div key={`${group.category}|${group.publisher}`} className="publisher-group">
+        <div key={`${group.category}|${group.standKey}`} className="publisher-group">
           <div className="publisher-heading-row">
             <h2 className="publisher-heading">{group.publisher}</h2>
             <StandInput
-              key={stands[group.publisher] ?? ''}
+              key={stands[group.standKey] ?? ''}
               publisher={group.publisher}
-              value={stands[group.publisher] ?? ''}
+              value={stands[group.standKey] ?? ''}
               onUpdateStand={onUpdateStand}
             />
           </div>

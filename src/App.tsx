@@ -6,6 +6,7 @@ import Login from './components/Login'
 import BookForm from './components/BookForm'
 import BookList from './components/BookList'
 import { exportBooksToExcel } from './lib/exportBooks'
+import { normalizePublisherKey } from './lib/publisher'
 import owlLogo from './assets/owl-logo.png'
 import './App.css'
 
@@ -75,7 +76,7 @@ function App() {
         if (cancelled || error || !data) return
         const map: Record<string, string> = {}
         for (const row of data as { publisher: string; stand: string | null }[]) {
-          if (row.stand) map[row.publisher] = row.stand
+          if (row.stand) map[normalizePublisherKey(row.publisher)] = row.stand
         }
         setStands(map)
       })
@@ -106,8 +107,10 @@ function App() {
   ): Promise<string | null> {
     if (!session) return 'Sessão inválida.'
 
+    const key = normalizePublisherKey(publisher)
+
     const { error } = await supabase.from('publisher_stands').upsert(
-      { user_id: session.user.id, publisher, stand: stand || null },
+      { user_id: session.user.id, publisher: key, stand: stand || null },
       { onConflict: 'user_id,publisher' },
     )
 
@@ -116,9 +119,9 @@ function App() {
     setStands((current) => {
       const next = { ...current }
       if (stand) {
-        next[publisher] = stand
+        next[key] = stand
       } else {
-        delete next[publisher]
+        delete next[key]
       }
       return next
     })

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from './lib/supabaseClient'
-import type { Book, NewBook } from './types'
+import type { Book, Category, NewBook } from './types'
 import Login from './components/Login'
 import BookForm from './components/BookForm'
 import BookList from './components/BookList'
@@ -26,6 +26,8 @@ function App() {
   const [booksLoading, setBooksLoading] = useState(false)
   const [booksError, setBooksError] = useState<string | null>(null)
   const [stands, setStands] = useState<Record<string, string>>({})
+  const [categoryFilter, setCategoryFilter] = useState<'all' | Category>('all')
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -46,6 +48,7 @@ function App() {
     if (!session) {
       setBooks([])
       setStands({})
+      setSelectedIds(new Set())
       return
     }
 
@@ -64,7 +67,9 @@ function App() {
         if (error) {
           setBooksError(error.message)
         } else {
-          setBooks(data as Book[])
+          const fetchedBooks = data as Book[]
+          setBooks(fetchedBooks)
+          setSelectedIds(new Set(fetchedBooks.map((book) => book.id)))
         }
         setBooksLoading(false)
       })
@@ -97,8 +102,59 @@ function App() {
 
     if (error) return error.message
 
-    setBooks((current) => sortBooks([...current, data as Book]))
+    const addedBook = data as Book
+    setBooks((current) => sortBooks([...current, addedBook]))
+    setSelectedIds((current) => new Set(current).add(addedBook.id))
     return null
+  }
+
+  async function handleToggleFavorite(id: string, isFavorite: boolean) {
+    const previous = books
+    setBooks((current) =>
+      current.map((book) =>
+        book.id === id ? { ...book, is_favorite: isFavorite } : book,
+      ),
+    )
+
+    const { error } = await supabase
+      .from('books')
+      .update({ is_favorite: isFavorite })
+      .eq('id', id)
+
+    if (error) {
+      setBooksError(error.message)
+      setBooks(previous)
+    }
+  }
+
+  async function handleUpdateDiscount(
+    id: string,
+    discount: number,
+  ): Promise<string | null> {
+    const previous = books
+    setBooks((current) =>
+      current.map((book) => (book.id === id ? { ...book, discount } : book)),
+    )
+
+    const { error } = await supabase.from('books').update({ discount }).eq('id', id)
+
+    if (error) {
+      setBooks(previous)
+      return error.message
+    }
+    return null
+  }
+
+  function handleToggleSelected(id: string) {
+    setSelectedIds((current) => {
+      const next = new Set(current)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next
+    })
   }
 
   async function handleUpdateStand(
@@ -131,11 +187,17 @@ function App() {
   async function handleDeleteBook(id: string) {
     const previous = books
     setBooks((current) => current.filter((book) => book.id !== id))
+    setSelectedIds((current) => {
+      const next = new Set(current)
+      next.delete(id)
+      return next
+    })
 
     const { error } = await supabase.from('books').delete().eq('id', id)
     if (error) {
       setBooksError(error.message)
       setBooks(previous)
+      setSelectedIds((current) => new Set(current).add(id))
     }
   }
 
@@ -181,7 +243,30 @@ function App() {
         ) : (
           <>
             {books.length > 0 && (
-              <div className="export-bar">
+              <div className="list-toolbar">
+                <div className="category-filter">
+                  <button
+                    type="button"
+                    className={categoryFilter === 'all' ? 'active' : ''}
+                    onClick={() => setCategoryFilter('all')}
+                  >
+                    Todos
+                  </button>
+                  <button
+                    type="button"
+                    className={categoryFilter === 'adulto' ? 'active' : ''}
+                    onClick={() => setCategoryFilter('adulto')}
+                  >
+                    Adulto
+                  </button>
+                  <button
+                    type="button"
+                    className={categoryFilter === 'crianca' ? 'active' : ''}
+                    onClick={() => setCategoryFilter('crianca')}
+                  >
+                    Criança
+                  </button>
+                </div>
                 <button
                   type="button"
                   className="button-secondary"
@@ -192,10 +277,18 @@ function App() {
               </div>
             )}
             <BookList
-              books={books}
+              books={
+                categoryFilter === 'all'
+                  ? books
+                  : books.filter((book) => book.category === categoryFilter)
+              }
               stands={stands}
+              selectedIds={selectedIds}
               onDelete={handleDeleteBook}
               onUpdateStand={handleUpdateStand}
+              onToggleSelected={handleToggleSelected}
+              onToggleFavorite={handleToggleFavorite}
+              onUpdateDiscount={handleUpdateDiscount}
             />
           </>
         )}

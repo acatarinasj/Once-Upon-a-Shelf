@@ -8,6 +8,8 @@ export interface Book {
   published_month: string
   category: Category
   price: number
+  discount: number
+  is_favorite: boolean
   link: string | null
   created_at: string
 }

@@ -1,5 +1,6 @@
 import type { Book } from '../types'
 import { groupBooksByPublisher } from './groupBooks'
+import { normalizePublisherKey } from './publisher'
 
 const CATEGORY_LABELS: Record<string, string> = {
   adulto: 'Adulto',
@@ -22,12 +23,14 @@ export async function exportBooksToExcel(
   )
 
   const rows = orderedBooks.map((book) => ({
+    Favorito: book.is_favorite ? 'Sim' : '',
     Categoria: CATEGORY_LABELS[book.category] ?? book.category,
     Editora: book.publisher,
-    Stand: stands[book.publisher] ?? '',
+    Stand: stands[normalizePublisherKey(book.publisher)] ?? '',
     Livro: book.title,
     Publicação: formatMonthYear(book.published_month),
     'Preço (€)': book.price,
+    'Desconto (€)': book.discount,
     Link: book.link ?? '',
   }))
 

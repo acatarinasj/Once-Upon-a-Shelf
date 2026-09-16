@@ -11,6 +11,8 @@
   --accent-border: #d6bd8c;
   --danger: #b5695a;
   --danger-bg: #e9dcc1;
+  --card-adult: #e6bfcb;
+  --card-child: #f7e4ea;
   --shadow: 0 16px 32px -12px rgba(168, 103, 122, 0.28);
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -42,6 +44,8 @@
     --accent-border: #6b5a3e;
     --danger: #d0917d;
     --danger-bg: #453b2c;
+    --card-adult: #4a2c37;
+    --card-child: #3c2a29;
     --shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.5);
   }
 }

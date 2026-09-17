@@ -221,6 +221,13 @@ button.link.danger {
   gap: 10px 12px;
 }
 
+.filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .category-filter {
   display: flex;
   gap: 4px;
@@ -243,6 +250,24 @@ button.link.danger {
       background: var(--accent);
       color: white;
     }
+  }
+}
+
+.stale-filter {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  background: var(--surface-alt);
+  color: var(--text);
+  cursor: pointer;
+
+  &.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
   }
 }
 

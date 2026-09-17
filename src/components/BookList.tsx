@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Book, NewBook } from '../types'
 import { groupBooksByPublisher } from '../lib/groupBooks'
+import { isStale, STALE_MONTHS } from '../lib/staleness'
 import BookForm from './BookForm'
 
 interface BookListProps {
@@ -20,20 +21,10 @@ const currencyFormatter = new Intl.NumberFormat('pt-PT', {
   currency: 'EUR',
 })
 
-const STALE_MONTHS = 24
-
 const CATEGORY_LABELS = {
   adulto: 'Adulto',
   crianca: 'Criança',
 } as const
-
-function monthsSincePublished(publishedMonth: string): number {
-  const [year, month] = publishedMonth.slice(0, 7).split('-').map(Number)
-  const now = new Date()
-  return (
-    (now.getFullYear() - year) * 12 + (now.getMonth() + 1 - month)
-  )
-}
 
 function formatMonthYear(publishedMonth: string): string {
   const [year, month] = publishedMonth.slice(0, 7).split('-').map(Number)
@@ -151,8 +142,7 @@ export default function BookList({
           </div>
           <ul className="book-list">
             {group.books.map((book) => {
-              const isStale =
-                monthsSincePublished(book.published_month) > STALE_MONTHS
+              const stale = isStale(book.published_month)
 
               if (editingId === book.id) {
                 return (
@@ -198,7 +188,7 @@ export default function BookList({
                     </button>
                     <div className="book-info">
                       <div className="book-title-row">
-                        {isStale && (
+                        {stale && (
                           <span
                             className="stale-dot"
                             title={`Publicado há mais de ${STALE_MONTHS} meses`}

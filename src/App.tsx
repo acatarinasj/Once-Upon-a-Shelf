@@ -7,6 +7,7 @@ import BookForm from './components/BookForm'
 import BookList from './components/BookList'
 import { exportBooksToExcel } from './lib/exportBooks'
 import { normalizePublisherKey } from './lib/publisher'
+import { isStale } from './lib/staleness'
 import owlLogo from './assets/owl-logo.png'
 import './App.css'
 
@@ -27,6 +28,7 @@ function App() {
   const [booksError, setBooksError] = useState<string | null>(null)
   const [stands, setStands] = useState<Record<string, string>>({})
   const [categoryFilter, setCategoryFilter] = useState<'all' | Category>('all')
+  const [staleOnly, setStaleOnly] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
@@ -264,27 +266,36 @@ function App() {
           <>
             {books.length > 0 && (
               <div className="list-toolbar">
-                <div className="category-filter">
+                <div className="filters">
+                  <div className="category-filter">
+                    <button
+                      type="button"
+                      className={categoryFilter === 'all' ? 'active' : ''}
+                      onClick={() => setCategoryFilter('all')}
+                    >
+                      Todos
+                    </button>
+                    <button
+                      type="button"
+                      className={categoryFilter === 'adulto' ? 'active' : ''}
+                      onClick={() => setCategoryFilter('adulto')}
+                    >
+                      Adulto
+                    </button>
+                    <button
+                      type="button"
+                      className={categoryFilter === 'crianca' ? 'active' : ''}
+                      onClick={() => setCategoryFilter('crianca')}
+                    >
+                      Criança
+                    </button>
+                  </div>
                   <button
                     type="button"
-                    className={categoryFilter === 'all' ? 'active' : ''}
-                    onClick={() => setCategoryFilter('all')}
+                    className={`stale-filter${staleOnly ? ' active' : ''}`}
+                    onClick={() => setStaleOnly((current) => !current)}
                   >
-                    Todos
-                  </button>
-                  <button
-                    type="button"
-                    className={categoryFilter === 'adulto' ? 'active' : ''}
-                    onClick={() => setCategoryFilter('adulto')}
-                  >
-                    Adulto
-                  </button>
-                  <button
-                    type="button"
-                    className={categoryFilter === 'crianca' ? 'active' : ''}
-                    onClick={() => setCategoryFilter('crianca')}
-                  >
-                    Criança
+                    +24 meses
                   </button>
                 </div>
                 <button
@@ -297,11 +308,11 @@ function App() {
               </div>
             )}
             <BookList
-              books={
-                categoryFilter === 'all'
-                  ? books
-                  : books.filter((book) => book.category === categoryFilter)
-              }
+              books={books.filter(
+                (book) =>
+                  (categoryFilter === 'all' || book.category === categoryFilter) &&
+                  (!staleOnly || isStale(book.published_month)),
+              )}
               stands={stands}
               selectedIds={selectedIds}
               onDelete={handleDeleteBook}

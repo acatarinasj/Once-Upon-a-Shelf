@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import type { Book } from '../types'
+import type { Book, NewBook } from '../types'
 import { groupBooksByPublisher } from '../lib/groupBooks'
+import BookForm from './BookForm'
 
 interface BookListProps {
   books: Book[]
@@ -11,6 +12,7 @@ interface BookListProps {
   onToggleSelected: (id: string) => void
   onToggleFavorite: (id: string, isFavorite: boolean) => void
   onUpdateDiscount: (id: string, discount: number) => Promise<string | null>
+  onUpdateBook: (id: string, book: NewBook) => Promise<string | null>
 }
 
 const currencyFormatter = new Intl.NumberFormat('pt-PT', {
@@ -121,7 +123,10 @@ export default function BookList({
   onToggleSelected,
   onToggleFavorite,
   onUpdateDiscount,
+  onUpdateBook,
 }: BookListProps) {
+  const [editingId, setEditingId] = useState<string | null>(null)
+
   if (books.length === 0) {
     return <p className="empty-state">Nenhum livro corresponde a este filtro.</p>
   }
@@ -148,6 +153,23 @@ export default function BookList({
             {group.books.map((book) => {
               const isStale =
                 monthsSincePublished(book.published_month) > STALE_MONTHS
+
+              if (editingId === book.id) {
+                return (
+                  <li key={book.id}>
+                    <BookForm
+                      initialValues={book}
+                      submitLabel="Guardar"
+                      onCancel={() => setEditingId(null)}
+                      onSubmit={async (updatedBook) => {
+                        const error = await onUpdateBook(book.id, updatedBook)
+                        if (!error) setEditingId(null)
+                        return error
+                      }}
+                    />
+                  </li>
+                )
+              }
 
               return (
                 <li
@@ -200,14 +222,24 @@ export default function BookList({
                         {CATEGORY_LABELS[book.category]}
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      className="book-delete"
-                      aria-label={`Remover ${book.title}`}
-                      onClick={() => onDelete(book.id)}
-                    >
-                      ×
-                    </button>
+                    <div className="book-actions">
+                      <button
+                        type="button"
+                        className="book-edit"
+                        aria-label={`Editar ${book.title}`}
+                        onClick={() => setEditingId(book.id)}
+                      >
+                        ✎
+                      </button>
+                      <button
+                        type="button"
+                        className="book-delete"
+                        aria-label={`Remover ${book.title}`}
+                        onClick={() => onDelete(book.id)}
+                      >
+                        ×
+                      </button>
+                    </div>
                   </div>
                   <div className="book-bottom-row">
                     <span className="book-price">

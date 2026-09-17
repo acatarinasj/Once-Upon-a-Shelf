@@ -22,17 +22,33 @@ const currentMonth = String(now.getMonth() + 1).padStart(2, '0')
 const currentYear = String(now.getFullYear())
 
 interface BookFormProps {
-  onAdd: (book: NewBook) => Promise<string | null>
+  initialValues?: NewBook
+  submitLabel?: string
+  onSubmit: (book: NewBook) => Promise<string | null>
+  onCancel?: () => void
 }
 
-export default function BookForm({ onAdd }: BookFormProps) {
-  const [title, setTitle] = useState('')
-  const [publisher, setPublisher] = useState('')
-  const [publishedMonth, setPublishedMonth] = useState(currentMonth)
-  const [publishedYear, setPublishedYear] = useState(currentYear)
-  const [category, setCategory] = useState<Category>('adulto')
-  const [price, setPrice] = useState('')
-  const [link, setLink] = useState('')
+export default function BookForm({
+  initialValues,
+  submitLabel = 'Adicionar livro',
+  onSubmit,
+  onCancel,
+}: BookFormProps) {
+  const [title, setTitle] = useState(initialValues?.title ?? '')
+  const [publisher, setPublisher] = useState(initialValues?.publisher ?? '')
+  const [publishedMonth, setPublishedMonth] = useState(
+    initialValues?.published_month.slice(5, 7) ?? currentMonth,
+  )
+  const [publishedYear, setPublishedYear] = useState(
+    initialValues?.published_month.slice(0, 4) ?? currentYear,
+  )
+  const [category, setCategory] = useState<Category>(
+    initialValues?.category ?? 'adulto',
+  )
+  const [price, setPrice] = useState(
+    initialValues ? String(initialValues.price) : '',
+  )
+  const [link, setLink] = useState(initialValues?.link ?? '')
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -57,7 +73,7 @@ export default function BookForm({ onAdd }: BookFormProps) {
     }
 
     setSaving(true)
-    const errorMessage = await onAdd({
+    const errorMessage = await onSubmit({
       title: title.trim(),
       publisher: publisher.trim(),
       published_month: `${publishedYear}-${publishedMonth}-01`,
@@ -72,12 +88,14 @@ export default function BookForm({ onAdd }: BookFormProps) {
       return
     }
 
-    setTitle('')
-    setPublisher('')
-    setPublishedMonth(currentMonth)
-    setPublishedYear(currentYear)
-    setPrice('')
-    setLink('')
+    if (!initialValues) {
+      setTitle('')
+      setPublisher('')
+      setPublishedMonth(currentMonth)
+      setPublishedYear(currentYear)
+      setPrice('')
+      setLink('')
+    }
   }
 
   return (
@@ -174,8 +192,14 @@ export default function BookForm({ onAdd }: BookFormProps) {
       </div>
 
       <button type="submit" className="primary" disabled={saving}>
-        {saving ? 'A adicionar...' : 'Adicionar livro'}
+        {saving ? 'A guardar...' : submitLabel}
       </button>
+
+      {onCancel && (
+        <button type="button" className="link" onClick={onCancel} disabled={saving}>
+          Cancelar
+        </button>
+      )}
 
       {error && <p className="form-error">{error}</p>}
     </form>

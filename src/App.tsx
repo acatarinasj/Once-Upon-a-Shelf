@@ -108,6 +108,26 @@ function App() {
     return null
   }
 
+  async function handleUpdateBook(
+    id: string,
+    updatedBook: NewBook,
+  ): Promise<string | null> {
+    const previous = books
+    setBooks((current) =>
+      sortBooks(
+        current.map((book) => (book.id === id ? { ...book, ...updatedBook } : book)),
+      ),
+    )
+
+    const { error } = await supabase.from('books').update(updatedBook).eq('id', id)
+
+    if (error) {
+      setBooks(previous)
+      return error.message
+    }
+    return null
+  }
+
   async function handleToggleFavorite(id: string, isFavorite: boolean) {
     const previous = books
     setBooks((current) =>
@@ -234,7 +254,7 @@ function App() {
       </header>
 
       <main>
-        <BookForm onAdd={handleAddBook} />
+        <BookForm onSubmit={handleAddBook} />
 
         {booksError && <p className="form-error">{booksError}</p>}
 
@@ -289,6 +309,7 @@ function App() {
               onToggleSelected={handleToggleSelected}
               onToggleFavorite={handleToggleFavorite}
               onUpdateDiscount={handleUpdateDiscount}
+              onUpdateBook={handleUpdateBook}
             />
           </>
         )}

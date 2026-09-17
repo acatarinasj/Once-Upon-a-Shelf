@@ -331,11 +331,11 @@ button.link.danger {
   border-radius: 14px;
 
   &.category-adulto {
-    background: var(--card-adult);
+    background: var(--accent-bg);
   }
 
   &.category-crianca {
-    background: var(--card-child);
+    background: var(--surface-alt);
   }
 }
 
@@ -428,22 +428,28 @@ a.book-title-link {
 
 .book-price {
   font-weight: 700;
-  color: var(--accent-h);
-  background: var(--accent-bg);
+  color: #fff;
+  background: var(--accent);
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 14px;
   white-space: nowrap;
 }
 
+.book-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.book-edit,
 .book-delete {
-  background: var(--danger-bg);
-  color: var(--danger);
   border: none;
   border-radius: 999px;
   width: 28px;
   height: 28px;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1;
   cursor: pointer;
   display: inline-flex;
@@ -453,6 +459,17 @@ a.book-title-link {
   &:hover {
     filter: brightness(0.95);
   }
+}
+
+.book-edit {
+  background: var(--surface);
+  color: var(--accent-h);
+}
+
+.book-delete {
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: 16px;
 }
 
 .total {

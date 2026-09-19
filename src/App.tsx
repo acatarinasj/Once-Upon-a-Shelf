@@ -29,6 +29,7 @@ function App() {
   const [stands, setStands] = useState<Record<string, string>>({})
   const [categoryFilter, setCategoryFilter] = useState<'all' | Category>('all')
   const [staleOnly, setStaleOnly] = useState(false)
+  const [favoritesOnly, setFavoritesOnly] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
@@ -297,6 +298,13 @@ function App() {
                   >
                     +24 meses
                   </button>
+                  <button
+                    type="button"
+                    className={`stale-filter${favoritesOnly ? ' active' : ''}`}
+                    onClick={() => setFavoritesOnly((current) => !current)}
+                  >
+                    ★ Favoritos
+                  </button>
                 </div>
                 <button
                   type="button"
@@ -311,7 +319,8 @@ function App() {
               books={books.filter(
                 (book) =>
                   (categoryFilter === 'all' || book.category === categoryFilter) &&
-                  (!staleOnly || isStale(book.published_month)),
+                  (!staleOnly || isStale(book.published_month)) &&
+                  (!favoritesOnly || book.is_favorite),
               )}
               stands={stands}
               selectedIds={selectedIds}

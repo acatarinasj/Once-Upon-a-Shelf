@@ -131,6 +131,12 @@ export default function BookList({
 
   return (
     <>
+      <p className="total">
+        Total: <strong>{currencyFormatter.format(totalPrice)}</strong>
+      </p>
+      <p className="total">
+        Total de descontos: <strong>{currencyFormatter.format(totalDiscount)}</strong>
+      </p>
       {groups.map((group) => (
         <div key={group.standKey} className="publisher-group">
           <div className="publisher-heading-row">
@@ -250,12 +256,6 @@ export default function BookList({
           </ul>
         </div>
       ))}
-      <p className="total">
-        Total: <strong>{currencyFormatter.format(totalPrice)}</strong>
-      </p>
-      <p className="total">
-        Total de descontos: <strong>{currencyFormatter.format(totalDiscount)}</strong>
-      </p>
     </>
   )
 }

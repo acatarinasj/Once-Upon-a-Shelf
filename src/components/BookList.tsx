@@ -8,6 +8,7 @@ interface BookListProps {
   books: Book[]
   stands: Record<string, string>
   selectedIds: Set<string>
+  publisherSuggestions: string[]
   onDelete: (id: string) => void
   onUpdateStand: (publisher: string, stand: string) => Promise<string | null>
   onToggleSelected: (id: string) => void
@@ -109,6 +110,7 @@ export default function BookList({
   books,
   stands,
   selectedIds,
+  publisherSuggestions,
   onDelete,
   onUpdateStand,
   onToggleSelected,
@@ -150,6 +152,7 @@ export default function BookList({
                     <BookForm
                       initialValues={book}
                       submitLabel="Guardar"
+                      publisherSuggestions={publisherSuggestions}
                       onCancel={() => setEditingId(null)}
                       onSubmit={async (updatedBook) => {
                         const error = await onUpdateBook(book.id, updatedBook)

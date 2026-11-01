@@ -20,6 +20,16 @@ function sortBooks(books: Book[]): Book[] {
   )
 }
 
+function getPublisherSuggestions(books: Book[]): string[] {
+  const byKey = new Map<string, string>()
+  for (const book of books) {
+    byKey.set(normalizePublisherKey(book.publisher), book.publisher.trim())
+  }
+  return Array.from(byKey.values()).sort((a, b) =>
+    a.localeCompare(b, 'pt', { sensitivity: 'base' }),
+  )
+}
+
 function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
@@ -257,7 +267,10 @@ function App() {
       </header>
 
       <main>
-        <BookForm onSubmit={handleAddBook} />
+        <BookForm
+          onSubmit={handleAddBook}
+          publisherSuggestions={getPublisherSuggestions(books)}
+        />
 
         {booksError && <p className="form-error">{booksError}</p>}
 
@@ -324,6 +337,7 @@ function App() {
               )}
               stands={stands}
               selectedIds={selectedIds}
+              publisherSuggestions={getPublisherSuggestions(books)}
               onDelete={handleDeleteBook}
               onUpdateStand={handleUpdateStand}
               onToggleSelected={handleToggleSelected}

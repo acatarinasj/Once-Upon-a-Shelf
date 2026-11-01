@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import type { FormEvent } from 'react'
 import type { Category, NewBook } from '../types'
 
@@ -24,6 +24,7 @@ const currentYear = String(now.getFullYear())
 interface BookFormProps {
   initialValues?: NewBook
   submitLabel?: string
+  publisherSuggestions?: string[]
   onSubmit: (book: NewBook) => Promise<string | null>
   onCancel?: () => void
 }
@@ -31,9 +32,11 @@ interface BookFormProps {
 export default function BookForm({
   initialValues,
   submitLabel = 'Adicionar livro',
+  publisherSuggestions = [],
   onSubmit,
   onCancel,
 }: BookFormProps) {
+  const publisherListId = useId()
   const [title, setTitle] = useState(initialValues?.title ?? '')
   const [publisher, setPublisher] = useState(initialValues?.publisher ?? '')
   const [publishedMonth, setPublishedMonth] = useState(
@@ -117,9 +120,16 @@ export default function BookForm({
           id="publisher"
           type="text"
           required
+          list={publisherListId}
+          autoComplete="off"
           value={publisher}
           onChange={(e) => setPublisher(e.target.value)}
         />
+        <datalist id={publisherListId}>
+          {publisherSuggestions.map((name) => (
+            <option key={name} value={name} />
+          ))}
+        </datalist>
       </div>
 
       <div className="field-row">

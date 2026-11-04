@@ -38,7 +38,7 @@ function App() {
   const [booksError, setBooksError] = useState<string | null>(null)
   const [stands, setStands] = useState<Record<string, string>>({})
   const [categoryFilter, setCategoryFilter] = useState<'all' | Category>('all')
-  const [staleOnly, setStaleOnly] = useState(false)
+  const [ageFilter, setAgeFilter] = useState<'all' | 'stale' | 'recent'>('all')
   const [favoritesOnly, setFavoritesOnly] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
@@ -306,10 +306,21 @@ function App() {
                   </div>
                   <button
                     type="button"
-                    className={`stale-filter${staleOnly ? ' active' : ''}`}
-                    onClick={() => setStaleOnly((current) => !current)}
+                    className={`stale-filter${ageFilter === 'stale' ? ' active' : ''}`}
+                    onClick={() =>
+                      setAgeFilter((current) => (current === 'stale' ? 'all' : 'stale'))
+                    }
                   >
                     +24 meses
+                  </button>
+                  <button
+                    type="button"
+                    className={`stale-filter${ageFilter === 'recent' ? ' active' : ''}`}
+                    onClick={() =>
+                      setAgeFilter((current) => (current === 'recent' ? 'all' : 'recent'))
+                    }
+                  >
+                    -24 meses
                   </button>
                   <button
                     type="button"
@@ -332,7 +343,10 @@ function App() {
               books={books.filter(
                 (book) =>
                   (categoryFilter === 'all' || book.category === categoryFilter) &&
-                  (!staleOnly || isStale(book.published_month)) &&
+                  (ageFilter === 'all' ||
+                    (ageFilter === 'stale'
+                      ? isStale(book.published_month)
+                      : !isStale(book.published_month))) &&
                   (!favoritesOnly || book.is_favorite),
               )}
               stands={stands}
